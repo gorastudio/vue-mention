@@ -225,7 +225,14 @@ export default {
     },
 
     getValue () {
-      return this.input.isContentEditable ? window.getSelection().anchorNode.textContent : this.input.value
+      if (this.input.isContentEditable) {
+        const node = window.getSelection().anchorNode
+        if (!node.children) {
+          return node.textContent
+        }
+        return ''
+      }
+      return this.input.value
     },
 
     setValue (value) {
