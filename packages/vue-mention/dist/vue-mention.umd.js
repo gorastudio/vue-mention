@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('v-tooltip')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'v-tooltip'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global['vue-mention'] = {}, global.vTooltip));
-}(this, (function (exports, vTooltip) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('floating-vue')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'floating-vue'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global['vue-mention'] = {}, global.floatingVue));
+}(this, (function (exports, floatingVue) { 'use strict';
 
   function _slicedToArray(arr, i) {
     return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
@@ -160,11 +160,17 @@
   })();
   });
 
+  floatingVue.options.themes.mentionable = {
+    $extend: 'dropdown',
+    placement: 'top-start',
+    arrowPadding: 6,
+    arrowOverflow: false
+  };
   var userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : '';
   var isIe = userAgent.indexOf('MSIE ') !== -1 || userAgent.indexOf('Trident/') !== -1;
   var script = {
     components: {
-      VPopover: vTooltip.VPopover
+      VDropdown: floatingVue.Dropdown
     },
     inheritAttrs: false,
     props: {
@@ -201,6 +207,18 @@
       limit: {
         type: Number,
         default: 8
+      },
+      theme: {
+        type: String,
+        default: 'mentionable'
+      },
+      caretHeight: {
+        type: Number,
+        default: 0
+      },
+      hideNoResult: {
+        type: Boolean,
+        default: false
       }
     },
     data: function data() {
@@ -482,8 +500,10 @@
 
           this.caretPosition.top -= this.input.scrollTop;
 
-          if (this.$refs.popper && this.$refs.popper.popperInstance) {
-            this.$refs.popper.popperInstance.scheduleUpdate();
+          if (this.caretHeight) {
+            this.caretPosition.height = this.caretHeight;
+          } else if (isNaN(this.caretPosition.height)) {
+            this.caretPosition.height = 16;
           }
         }
       },
@@ -610,7 +630,7 @@
         _vm._t("default"),
         _vm._v(" "),
         _c(
-          "VPopover",
+          "VDropdown",
           _vm._b(
             {
               ref: "popper",
@@ -624,17 +644,18 @@
                 : {},
               attrs: {
                 placement: _vm.placement,
-                open: !!_vm.key,
-                trigger: "manual",
-                "auto-hide": false
+                shown: !!_vm.key,
+                triggers: [],
+                "auto-hide": false,
+                theme: _vm.theme
               },
               scopedSlots: _vm._u(
                 [
                   {
-                    key: "popover",
+                    key: "popper",
                     fn: function() {
                       return [
-                        !_vm.displayedItems.length
+                        !_vm.displayedItems.length && !_vm.hideNoResult
                           ? _c(
                               "div",
                               [
@@ -644,7 +665,8 @@
                               ],
                               2
                             )
-                          : _vm._l(_vm.displayedItems, function(item, index) {
+                          : _vm.displayedItems.length > 0
+                          ? _vm._l(_vm.displayedItems, function(item, index) {
                               return _c(
                                 "div",
                                 {
@@ -685,6 +707,7 @@
                                 2
                               )
                             })
+                          : _vm._e()
                       ]
                     },
                     proxy: true
@@ -694,7 +717,7 @@
                 true
               )
             },
-            "VPopover",
+            "VDropdown",
             _vm.$attrs,
             false
           ),
@@ -751,7 +774,7 @@
 
   var plugin = {
     // eslint-disable-next-line no-undef
-    version: "1.1.0",
+    version: "1.0.0-floating-vue1",
     install: function install(Vue, options) {
       var finalOptions = Object.assign({}, {
         installComponents: true,

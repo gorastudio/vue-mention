@@ -5,6 +5,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "main": "./packages/vue-mention/dist/vue-mention.min.js",
   "scripts": {
     "build": "lerna run build"
   },
