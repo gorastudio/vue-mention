@@ -69,6 +69,11 @@ export default {
       type: Number,
       default: 0,
     },
+
+    hideNoResult: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data () {
@@ -399,13 +404,13 @@ export default {
       />
 
       <template #popper>
-        <div v-if="!displayedItems.length">
+        <div v-if="!displayedItems.length && !hideNoResult">
           <slot name="no-result">
             No result
           </slot>
         </div>
 
-        <template v-else>
+        <template v-else-if="displayedItems.length > 0">
           <div
             v-for="(item, index) of displayedItems"
             :key="index"
